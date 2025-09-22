@@ -5,9 +5,7 @@ import jwt from "jsonwebtoken";
 // Generate JWT Token
 const generateToken = (userId) => {
   const payload = userId;
-  return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
+  return jwt.sign(payload, process.env.JWT_SECRET);
 };
 
 // Register User
