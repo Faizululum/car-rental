@@ -4,11 +4,11 @@ import jwt from "jsonwebtoken";
 
 // Generate JWT Token
 const generateToken = (userId) => {
-    const payload = userId;
-    return jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: "1h"
-    });
-}
+  const payload = userId;
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+};
 
 // Register User
 export const registerUser = async (req, res) => {
@@ -27,6 +27,32 @@ export const registerUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashedPassword });
+    const token = generateToken(user._id.toString());
+
+    return res.json({
+      success: true,
+      message: "User registered successfully",
+      token,
+    });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Login User
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+    if (!isPasswordMatch) {
+      return res.json({ success: false, message: "Invalid credentials" });
+    }
     const token = generateToken(user._id.toString());
 
     return res.json({
