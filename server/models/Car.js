@@ -7,7 +7,6 @@ const carSchema = new mongoose.Schema(
     owner: {
       type: ObjectId,
       ref: "User",
-      required: true,
     },
     brand: {
       type: String,
