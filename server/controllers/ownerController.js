@@ -17,35 +17,47 @@ export const changeRoleToOwner = async (req, res) => {
 
 // API to list all cars
 export const addCar = async (req, res) => {
-    try {
-        const { _id } = req.user;
-        let car = JSON.parse(req.body.carData);
-        const imageFile = req.file;
+  try {
+    const { _id } = req.user;
+    let car = JSON.parse(req.body.carData);
+    const imageFile = req.file;
 
-        // Upload image to ImageKit
-        const fileBuffer = fs.readFileSync(imageFile.path)
-        const response = await imagekit.upload({
-          file: fileBuffer, //required
-          fileName: imageFile.originalname, //required
-          folder: "/cars"
-        })
+    // Upload image to ImageKit
+    const fileBuffer = fs.readFileSync(imageFile.path);
+    const response = await imagekit.upload({
+      file: fileBuffer, //required
+      fileName: imageFile.originalname, //required
+      folder: "/cars",
+    });
 
-        // Optimization through imagekit URL transformation
-        var optimizedImageUrl = imagekit.url({
-            path : response.filePath,
-            transformation : [
-              {width: "1280"}, // Width Resizing
-              {quality: "auto"}, // Quality Optimization
-              {format: "webp"} // Format Conversion
-            ]
-        });
+    // Optimization through imagekit URL transformation
+    var optimizedImageUrl = imagekit.url({
+      path: response.filePath,
+      transformation: [
+        { width: "1280" }, // Width Resizing
+        { quality: "auto" }, // Quality Optimization
+        { format: "webp" }, // Format Conversion
+      ],
+    });
 
-        const image = optimizedImageUrl;
-        await Car.create({ ...car, owner: _id, image });
+    const image = optimizedImageUrl;
+    await Car.create({ ...car, owner: _id, image });
 
-        res.json({ success: true, message: "Car added successfully" });
-    } catch (error) {
-        console.log(error.message);
-        res.json({ success: false, message: error.message });
-    }
-}
+    res.json({ success: true, message: "Car added successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// API to List Owner Cars
+export const getOwnerCars = async (req, res) => {
+  try {
+    const { _id } = req.user;
+    const cars = await Car.find({ owner: _id });
+    res.json({ success: true, cars });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
