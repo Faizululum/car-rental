@@ -61,3 +61,19 @@ export const getOwnerCars = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// API to toggle car availability
+export const toggleCarAvailability = async (req, res) => {
+  const { _id } = req.user;
+  const { carId } = req.body;
+  const car = await Car.findById(carId);
+
+  // Check if car belongs to the user
+  if (car.owner.toString() !== _id.toString()) {
+    return res.json({ success: false, message: "You cannot change availability of this car" });
+  }
+
+  car.isAvailable = !car.isAvailable;
+  await car.save();
+  res.json({ success: true, message: "Car availability updated successfully" });
+};
