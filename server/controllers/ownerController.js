@@ -1,4 +1,5 @@
 import imagekit from "../configs/imagekit.js";
+import Booking from "../models/Booking.js";
 import Car from "../models/Car.js";
 import User from "../models/User.js";
 import fs from "fs";
@@ -116,6 +117,24 @@ export const getDashboardData = async (req, res) => {
     }
 
     const cars = await Car.find({ owner: _id });
+    const bookings = await Booking.find({ owner: _id }).populate("car").sort({ createdAt: -1 });
+
+    const pendingBookings = Booking.find({ owner: _id, status: "pending" });
+    const confirmedBookings = Booking.find({ owner: _id, status: "confirmed" });
+
+    // Calculate monthly revenue from confirmed bookings
+    const monthlyRevenue = bookings.slice().filter(booking => booking.status === "confirmed").reduce((acc, booking) => acc + booking.price, 0);
+
+    const dashboardData = {
+      totalCars: cars.length,
+      totalBookings: bookings.length,
+      pendingBookings: pendingBookings.length,
+      confirmedBookings: confirmedBookings.length,
+      recentBookings: bookings.slice(0, 3),
+      monthlyRevenue,
+    };
+
+    res.json({ success: true, dashboardData });
   } catch (error) {
     console.log(error.message);
     res.json({ success: false, message: error.message });
