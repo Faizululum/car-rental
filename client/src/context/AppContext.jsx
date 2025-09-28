@@ -88,6 +88,7 @@ export const AppProvider = ({ children }) => {
     setCars,
     logout,
     token,
+    setToken,
     fetchUser,
     fetchCars,
   };
