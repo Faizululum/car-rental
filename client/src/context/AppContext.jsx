@@ -38,7 +38,7 @@ export const AppProvider = ({ children }) => {
     // Function to fetch all cars from the server
     const fetchCars = async () => {
       try {
-        const {data} = await axios.get("/api/cars");
+        const {data} = await axios.get("/api/user/cars");
         data.success ? setCars(data.cars) : toast.error(data.message);
       } catch (error) {
         toast.error(error.message);        
