@@ -3,7 +3,7 @@ import Car from "../models/Car.js";
 
 
 // Function to check car availability of car for given dates
-const checkAvailability = async (req, res) => {
+const checkAvailability = async (car, pickupDate, returnDate) => {
     const booking = await Booking.find({
         car,
         pickupDate: {
@@ -79,7 +79,7 @@ export const getUserBookings = async (req, res) => {
 // API to get owner bookings
 export const getOwnerBookings = async (req, res) => {
     try {
-        if (role !== "owner") {
+        if (req.user.role !== "owner") {
             return res.json({ success: false, message: "Only owners can access bookings" });
         }
         const bookings = await Booking.find({ owner: req.user._id }).populate("car user").select("-user.password").sort({ createdAt: -1 });
