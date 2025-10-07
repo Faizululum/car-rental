@@ -4,7 +4,7 @@ import { protect } from "../middleware/auth.js";
 
 const bookingRouter = express.Router();
 
-bookingRouter.get("/check-availability", checkAvailabilityOfCar);
+bookingRouter.post("/check-availability", checkAvailabilityOfCar);
 bookingRouter.post("/create", protect, createBooking);
 bookingRouter.get("/user", protect, getUserBookings);
 bookingRouter.get("/owner", protect, getOwnerBookings);

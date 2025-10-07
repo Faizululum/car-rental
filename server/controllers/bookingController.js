@@ -4,7 +4,7 @@ import Car from "../models/Car.js";
 
 // Function to check car availability of car for given dates
 const checkAvailability = async (car, pickupDate, returnDate) => {
-    const booking = await Booking.find({
+    const bookings = await Booking.find({
         car,
         pickupDate: {
             $lte: returnDate
@@ -13,7 +13,7 @@ const checkAvailability = async (car, pickupDate, returnDate) => {
             $gte: pickupDate,
         }
     })
-    return booking.length === 0;
+    return bookings.length === 0;
 }
 
 // API to Check Availability of car for given dates and location
